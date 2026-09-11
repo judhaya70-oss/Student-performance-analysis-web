@@ -115,6 +115,32 @@ def home():
         error=error
     )
 
+@app.route("/add_student", methods=["POST"])
+def add_student():
 
+    new_student = {
+        "StudentID": request.form["student_id"],
+        "Name": request.form["name"],
+        "Semester": request.form["semester"],
+        "Maths": request.form["maths"],
+        "Physics": request.form["physics"],
+        "Chemistry": request.form["chemistry"],
+        "Python": request.form["python"],
+        "English": request.form["english"],
+        "Attendance": request.form["attendance"],
+        "PreviousAverage": request.form["previous_average"]
+    }
+
+    global data
+
+    data.loc[len(data)] = new_student
+
+    data.to_csv("students.csv", index=False)
+
+    return render_template(
+        "index.html",
+        result=None,
+        error="Student added successfully!"
+    )
 if __name__== "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
