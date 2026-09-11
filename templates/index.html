@@ -1,1 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Student Performance Analysis</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+
+<body>
+
+<div class="page">
+
+    <header>
+
+        <div>
+            <p class="small-title">ACADEMIC ANALYTICS</p>
+
+            <h1>Student Performance</h1>
+
+            <p class="subtitle">
+                Analyze academic performance and identify
+                areas for improvement.
+            </p>
+        </div>
+
+        <div class="logo">
+            SPA
+        </div>
+
+    </header>
+
+
+    <section class="search-box">
+
+        <form method="POST">
+
+            <div>
+
+                <label>Student ID</label>
+
+                <input
+                    type="text"
+                    name="student_id"
+                    placeholder="Enter Student ID"
+                    required>
+
+            </div>
+
+            <button type="submit">
+                Analyze Performance
+            </button>
+
+        </form>
+
+    </section>
+
+
+    {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+    {% endif %}
+
+
+    {% if result %}
+
+
+    <section class="student-card">
+
+        <div>
+
+            <p class="label">STUDENT</p>
+
+            <h2>{{ result.name }}</h2>
+
+            <p>
+                ID: {{ result.id }}
+                &nbsp; | &nbsp;
+                Semester: {{ result.semester }}
+            </p>
+
+        </div>
+
+        <div class="performance">
+
+            <span>{{ result.average }}%</span>
+
+            <small>{{ result.performance }}</small>
+
+        </div>
+
+    </section>
+
+
+    <section class="cards">
+
+        <div class="card">
+
+            <p>Average</p>
+
+            <h2>{{ result.average }}%</h2>
+
+        </div>
+
+
+        <div class="card">
+
+            <p>Attendance</p>
+
+            <h2>{{ result.attendance }}%</h2>
+
+        </div>
+
+
+        <div class="card">
+
+            <p>Previous Average</p>
+
+            <h2>{{ result.previous }}%</h2>
+
+        </div>
+
+
+        <div class="card">
+
+            <p>Performance Trend</p>
+
+            <h2>{{ result.trend }}</h2>
+
+        </div>
+
+    </section>
+
+
+    <section class="content-grid">
+
+
+        <div class="panel">
+
+            <h2>Subject Performance</h2>
+
+            <canvas id="performanceChart"></canvas>
+
+        </div>
+
+
+        <div class="panel">
+
+            <h2>Performance Summary</h2>
+
+            <div class="summary">
+
+                <p>
+                    Current Average:
+                    <strong>{{ result.average }}%</strong>
+                </p>
+
+                <p>
+                    Previous Average:
+                    <strong>{{ result.previous }}%</strong>
+                </p>
+
+                <p>
+                    Change:
+                    <strong>
+                        {{ result.difference }}%
+                    </strong>
+                </p>
+
+                <p>
+                    Status:
+                    <strong>{{ result.trend }}</strong>
+                </p>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+    <section class="content-grid">
+
+
+        <div class="panel">
+
+            <h2>Strong Subjects</h2>
+
+            {% if result.strong %}
+
+                {% for subject in result.strong %}
+
+                    <div class="subject good">
+                        ✓ {{ subject }}
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>No strong subject identified.</p>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="panel">
+
+            <h2>Needs Improvement</h2>
+
+            {% if result.improve %}
+
+                {% for subject in result.improve %}
+
+                    <div class="subject weak">
+                        ! {{ subject }}
+                    </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>
+                    Excellent! No subject requires
+                    immediate improvement.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+    </section>
+
+
+    <section class="panel recommendations">
+
+        <h2>Personalized Recommendations</h2>
+
+        {% if result.recommendations %}
+
+            {% for recommendation in result.recommendations %}
+
+                <div class="recommendation">
+                    💡 {{ recommendation }}
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="recommendation">
+                🌟 Excellent performance!
+                Continue your current study strategy.
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <section class="remember">
+
+        <h2>Important to Remember</h2>
+
+        <ul>
+
+            <li>
+                Focus more on subjects with lower marks.
+            </li>
+
+            <li>
+                Maintain regular attendance.
+            </li>
+
+            <li>
+                Compare your current performance with
+                previous semesters.
+            </li>
+
+            <li>
+                Consistent practice can improve weak areas.
+            </li>
+
+        </ul>
+
+    </section>
+
+
+    <script>
+
+        const subjects =
+            {{ result.marks.keys() | list | tojson }};
+
+        const marks =
+            {{ result.marks.values() | list | tojson }};
+
+
+        new Chart(
+            document.getElementById(
+                'performanceChart'
+            ),
+            {
+
+                type: 'bar',
+
+                data: {
+
+                    labels: subjects,
+
+                    datasets: [{
+
+                        label: 'Marks',
+
+                        data: marks,
+
+                        borderWidth: 1
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            max: 100
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        );
+
+    </script>
+
+
+    {% endif %}
+
+
+    <footer>
+
+        Student Performance Analysis System
+        © 2026
+
+    </footer>
+
+</div>
+
+</body>
+
+</html>
