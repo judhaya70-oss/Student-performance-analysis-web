@@ -372,7 +372,31 @@
     </footer>
 
 </div>
+<div class="add-student">
+    <h2>Add New Student</h2>
 
+    <form action="/add_student" method="POST">
+
+        <input type="number" name="student_id" placeholder="Student ID" required>
+
+        <input type="text" name="name" placeholder="Student Name" required>
+
+        <input type="number" name="semester" placeholder="Semester" required>
+
+        <input type="number" name="maths" placeholder="Maths" required>
+        <input type="number" name="physics" placeholder="Physics" required>
+        <input type="number" name="chemistry" placeholder="Chemistry" required>
+        <input type="number" name="python" placeholder="Python" required>
+        <input type="number" name="english" placeholder="English" required>
+
+        <input type="number" name="attendance" placeholder="Attendance %" required>
+
+        <input type="number" name="previous_average" placeholder="Previous Average" required>
+
+        <button type="submit">Add Student</button>
+
+    </form>
+</div>
 </body>
 
 </html>
